@@ -1,0 +1,6 @@
+.search-engine {
+  justify-self: center; /* Ensure individual alignment */
+  align-self: center; /* Ensure individual alignment */
+  grid-area: search-engine;
+  width: 20%;
+}
