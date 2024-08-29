@@ -4,18 +4,17 @@
   width: 90vw;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 100px auto;
-  grid-template-areas: "search-engine search-engine" "dialogue dialogue";
-  grid-row: 50px;
-  grid-column: 50px;
+  grid-template-areas: 
+    "search-engine search-engine" 
+    "dialogue dialogue";
   grid-gap: 10px;
   text-align: center;
   justify-items: center;
-
 }
 
 .dropdown-container {
-  justify-self: center; /* Ensure individual alignment */
-  align-self: center; /* Ensure individual alignment */
+  justify-self: center;
+  align-self: center;
   grid-area: dialogue;
   display: flex;
 }

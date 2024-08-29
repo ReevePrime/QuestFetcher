@@ -7,10 +7,12 @@ import "./App.css";
 
 function App() {
   const [questParams, questParamsDispatch] = useReducer(reducer, {
-    language1: "Japanese",
-    language2: "English",
+    languageLeft: "Japanese",
+    languageRight: "English",
     questData: {},
   });
+
+  const [showText, setShowText] = useState(false);
 
   // Matches the language picked on the dropdown menu to the matching language key in the dialogues
   const getTextDataByLanguage = (language, questData) => {
@@ -18,17 +20,16 @@ function App() {
     return questData[selectedTextDataKey];
   };
 
-  const selectedTextData1 = getTextDataByLanguage(
-    questParams.language1,
+  const selectedTextDataLeft = getTextDataByLanguage(
+    questParams.languageLeft,
     questParams.questData
   );
-  const selectedTextData2 = getTextDataByLanguage(
-    questParams.language2,
+  const selectedTextDataRight = getTextDataByLanguage(
+    questParams.languageRight,
     questParams.questData
   );
 
   // Function to handle showText when quest data is acquired
-  const [showText, setShowText] = useState(false);
   const displayDialogues = () => {
     if (Object.keys(questParams.questData).length > 0) {
       setShowText(true);
@@ -43,12 +44,19 @@ function App() {
 
   function reducer(state, action) {
     switch (action.type) {
-      case "SET_LANGUAGE1":
-        return { ...state, language1: action.payload };
-      case "SET_LANGUAGE2":
-        return { ...state, language2: action.payload };
+      case "SET_LANGUAGE_LEFT":
+        return { ...state, languageLeft: action.payload };
+      case "SET_LANGUAGE_RIGHT":
+        return { ...state, languageRight: action.payload };
       case "SET_QUESTDATA":
         return { ...state, questData: action.payload };
+        // If selecting the same language as in the other dropdown menu:
+      case "SWAP_LANGUAGES":
+        return {
+          ...state,
+          languageLeft: state.languageRight,
+          languageRight: state.languageLeft,
+        };
       default:
         return state;
     }
@@ -60,37 +68,36 @@ function App() {
         <SearchBar selectedQuest={handleQuestSelection} />
         <SearchButton onClick={displayDialogues} />
       </div>
-
-      <div className="dropdown1">
+      <div className="dropdown-left">
         <Dropdown
-          selectedLanguage={questParams.language1}
+          selectedLanguage={questParams.languageLeft}
           onLanguageChange={(newLanguage) =>
-            questParamsDispatch({ type: "SET_LANGUAGE1", payload: newLanguage })
+            questParamsDispatch({
+              type: "SET_LANGUAGE_LEFT",
+              payload: newLanguage,
+            })
           }
+          showText={showText}
+          selectedTextData={selectedTextDataLeft}
+          otherLanguage={questParams.languageRight}
+          swapLanguages={questParamsDispatch}
         />
-        {showText && selectedTextData1 ? (
-          selectedTextData1.Dialogue.map((text, index) => {
-            return <p key={index}>{text.Text}</p>;
-          })
-        ) : (
-          <div>No text to display</div>
-        )}
       </div>
 
-      <div className="dropdown2">
+      <div className="dropdown-right">
         <Dropdown
-          selectedLanguage={questParams.language2}
+          selectedLanguage={questParams.languageRight}
           onLanguageChange={(newLanguage) =>
-            questParamsDispatch({ type: "SET_LANGUAGE2", payload: newLanguage })
+            questParamsDispatch({
+              type: "SET_LANGUAGE_RIGHT",
+              payload: newLanguage,
+            })
           }
+          showText={showText}
+          selectedTextData={selectedTextDataRight}
+          otherLanguage={questParams.languageLeft}
+          swapLanguages={questParamsDispatch}
         />
-        {showText && selectedTextData2 ? (
-          selectedTextData2.Dialogue.map((text, index) => {
-            return <p key={index}>{text.Text}</p>;
-          })
-        ) : (
-          <div>No text to display</div>
-        )}
       </div>
     </div>
   );
@@ -98,8 +105,5 @@ function App() {
 
 export default App;
 
-// TODO: Turn the rendered language into components that are part of of the dropdown
-// TODO: Rename variables (language left right)
-// TODO: Render the list of languages by iterating over the mapping
-// TODO: Add a functionality to switch the languages if the same is selected twice
+
 // TODO: Clean up CSS
